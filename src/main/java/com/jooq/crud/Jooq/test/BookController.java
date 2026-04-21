@@ -3,10 +3,7 @@ package com.jooq.crud.Jooq.test;
 import com.example.jooq.generated.tables.Book;
 import org.jooq.DSLContext;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -41,7 +38,29 @@ public class BookController {
         return ResponseEntity.ok(result.getSQL());
     }
 
-    public record AuthorBook(String firstName, String lastName, String title) {
+    @PostMapping
+    public ResponseEntity<?> create(@RequestBody BookInput bookInput) {
+        ctx.insertInto(Book.BOOK)
+                .set(Book.BOOK.AUTHOR_ID, bookInput.authorId)
+                .set(Book.BOOK.TITLE, bookInput.title)
+                .set(Book.BOOK.LANGUAGE_ID, bookInput.languageId)
+                .set(Book.BOOK.PUBLISHED_IN, bookInput.publishedIn)
+                .execute();
+        return ResponseEntity.ok().build();
+    }
 
+    public record BookInput(
+            String title,
+            int authorId,
+            int languageId,
+            int publishedIn
+    ) {
+    }
+
+    public record AuthorBookOutput(
+            String firstName,
+            String lastName,
+            String title
+    ) {
     }
 }
